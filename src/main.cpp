@@ -13,7 +13,7 @@ const int SECOND_DIR_PIN = 33;
 const int THIRD_PWM_PIN = 26;
 const int THIRD_DIR_PIN = 27;
 
-void omuni3(int vector[], int x, int y) {
+void omuni3(int vector[], int x, int y, int theta) {
   vector[0] = x * 1;
   vector[1] = x * -1/2 + y * sqrt(3)/2;
   vector[2] = x * -1/2 - y * sqrt(3)/2;
@@ -45,24 +45,19 @@ void loop() {
 
   int coordinate_x = PS4.LStickX() * 2;
   int coordinate_y = PS4.LStickY() * 2;
+  int theta = PS4.R2Value() - PS4.L2Value();
+  int vec[] = {0,0,0};
+  omuni3(vec, coordinate_x, coordinate_y, theta);
 
-  if(PS4.R2() || PS4.L2()) {
-    digitalWrite(FIRST_DIR_PIN, PS4.R2() ? HIGH:LOW);
-    ledcWrite(0, 128);
-    digitalWrite(SECOND_DIR_PIN, PS4.R2() ? HIGH:LOW);
-    ledcWrite(1, 128);
-    digitalWrite(THIRD_DIR_PIN, PS4.R2() ? HIGH:LOW);
-    ledcWrite(2, 128);
-  }
-  else if(pow(coordinate_x, 2) + pow(coordinate_y, 2) < 40) {
+  int vector_average = (abs(vec[0]) + abs(vec[1]) + abs(vec[2])) / 3;
+
+  if(vector_average < 20) {
     ledcWrite(0, 0);
     ledcWrite(1, 0);
     ledcWrite(2, 0);
     return;
   }
 
-  int vec[] = {0,0,0};
-  omuni3(vec, coordinate_x, coordinate_y);
   digitalWrite(FIRST_DIR_PIN, vec[0] < 0 ? LOW:HIGH);
   ledcWrite(0, abs(vec[0]));
   digitalWrite(SECOND_DIR_PIN, vec[1] < 0 ? LOW:HIGH);
