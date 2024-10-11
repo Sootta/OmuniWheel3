@@ -42,22 +42,31 @@ void loop() {
     ledcWrite(2, 0);
     return;
   }
+
   int coordinate_x = PS4.LStickX() * 2;
   int coordinate_y = PS4.LStickY() * 2;
-  if(pow(coordinate_x, 2) + pow(coordinate_y, 2) < 40) {
+
+  if(PS4.R2() || PS4.L2()) {
+    digitalWrite(FIRST_DIR_PIN, PS4.R2() ? HIGH:LOW);
+    ledcWrite(0, 128);
+    digitalWrite(SECOND_DIR_PIN, PS4.R2() ? HIGH:LOW);
+    ledcWrite(1, 128);
+    digitalWrite(THIRD_DIR_PIN, PS4.R2() ? HIGH:LOW);
+    ledcWrite(2, 128);
+  }
+  else if(pow(coordinate_x, 2) + pow(coordinate_y, 2) < 40) {
     ledcWrite(0, 0);
     ledcWrite(1, 0);
     ledcWrite(2, 0);
     return;
   }
+
   int vec[] = {0,0,0};
   omuni3(vec, coordinate_x, coordinate_y);
-  
   digitalWrite(FIRST_DIR_PIN, vec[0] < 0 ? LOW:HIGH);
   ledcWrite(0, abs(vec[0]));
   digitalWrite(SECOND_DIR_PIN, vec[1] < 0 ? LOW:HIGH);
   ledcWrite(1, abs(vec[1]));
   digitalWrite(THIRD_DIR_PIN, vec[2] < 0 ? LOW:HIGH);
   ledcWrite(2, abs(vec[2]));
-  
 }
