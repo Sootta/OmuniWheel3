@@ -34,7 +34,7 @@ void setup() {
   ledcAttachPin(SECOND_PWM_PIN, 1);
   ledcAttachPin(THIRD_PWM_PIN, 2);
 }
-
+// aaaaaa
 void loop() {
   if(!PS4.isConnected()){
     ledcWrite(0, 0);
